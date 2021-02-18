@@ -1,4 +1,4 @@
-# powerplant-coding-challenge
+# Diego Beghin's solution to the powerplant-coding-challenge
 
 This guide assumes that you are working with a Unix command line.
 
