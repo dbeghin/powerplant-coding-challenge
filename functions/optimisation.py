@@ -5,11 +5,14 @@ import functions.intervalops as intervalops
 # external packages
 import logging
 
-def sortByCost(powerplant):
-    return powerplant.cost
-
 
 def makeListOfCostTiers(ordered_plants):
+    """
+    Function that groups together power plants with the same cost and returns a list of 'cost tiers'.
+    Each 'cost tier' is itself a list of PowerPlant objects with the same cost
+    :param ordered_plant: list of PowerPlant objects sorted by cost
+    :return: list of cost tiers
+    """
     plants_byCostTier = []
     last_costTier = []
     last_cost = -1
@@ -28,6 +31,13 @@ def makeListOfCostTiers(ordered_plants):
 
 
 def getPowerRanges(plants_byTier, wind_pc):
+    """
+    Function that takes a list of cost tiers and the wind percentage, and returns allowed power ranges for each cost tier.
+    Each cost tier may be composed of several plants, so the calculation of the allowed power range may not be trivial.
+    :param plants_byTier: list of cost tiers
+    :param wind_pc: wind percentage
+    :return: power ranges by cost tier
+    """
     power_ranges_byCostTier = []
     for iCostTier in range(0, len(plants_byTier)):
         power_range_sums = []
@@ -43,6 +53,13 @@ def getPowerRanges(plants_byTier, wind_pc):
 
 
 def initialiseSol(nTiers):
+    """
+    Function that intialises the solution by tier with the proper format.
+    The solution by tier is not supposed to be the final solution with power supplied by individual plants.
+    Instead, it's the power supplied by each cost tier.
+    :param nTiers: number of cost tiers
+    :return: initialised solution by tier
+    """
     tmp_dic = {
         "load": 0,
         "cost": 0
@@ -57,6 +74,16 @@ def initialiseSol(nTiers):
 
 
 def tryGoldenPath(load, plants_byCostTier, power_ranges_byCostTier):
+    """
+    Function that tries to find the 'obvious' solution by tier.
+    Returns a boolean telling whether a solution was found, and if so, the solution (by tier).
+    The 'obvious' solution is to set as much power as possible on the cheaper tiers and only then move on to more expensive tiers.
+    This may not be possible due to minimum power constraints.
+    :param load: total load to be distributed 
+    :param plants_byCostTier: list of plants by cost tier
+    :param power_ranges_byCostTier: list of power ranges by cost tier
+    :return: [ whether solution is found, solution by tier ]
+    """
     done = False
     tmp_load = load
     nTiers = len(power_ranges_byCostTier)
@@ -87,6 +114,16 @@ def tryGoldenPath(load, plants_byCostTier, power_ranges_byCostTier):
 
 
 def checkIfAllNeeded(load, subset, power_ranges_byCostTier):
+    """
+    Function that considers a subset of cost tiers, and checks if all of them can be used to supply a given load.
+    It does so by distributing the load by giving the minimum possible power to each tier belonging to the subset.
+    The power ranges of each tier are updated accordingly.
+    If the remaining load is positive and can still be distributed to the updated power range, then all tiers can be used.
+    :param load: total load to be distributed 
+    :param subset: subset of tiers to be considered 
+    :param power_ranges_byCostTier: power ranges for all cost tiers
+    :return: (boolean) whether the tiers in the subset can all be used
+    """
     all_needed = False
     tmp_load = load
     range_after_subtraction = []
@@ -106,6 +143,27 @@ def checkIfAllNeeded(load, subset, power_ranges_byCostTier):
 
 
 def bruteForceSolution(load, subset, plants_byCostTier, power_ranges_byCostTier):
+    """
+    Function that searches for solutions by tier (like tryGoldenPath).
+    This function considers a subset of cost tiers and searches for all possible solutions that make use of ALL cost tiers in the subset.
+    A solution will assign a load and a cost for each tier, as well as calculating a global cost.
+    The search for all possible solutions proceeds as follows:
+    (1) Making a list of all possible interval combinations, with exactly one interval from each tier.
+    Generically, the power range in each tier is a list of intervals rather than a single interval.
+    However, the optimal load HAS to belong to only ONE of the intervals.
+    (2) For each interval combination, check if a solution can be found using ALL intervals.
+    (3) If that's possible, assign the minimum load to each interval.
+    (4) Then assign the maximum load to intervals ordered by cheapness, until done.
+    (5) Append solution to list of possible solutions.
+    Then sort the solutions by cost and return cheapest.
+    This will be the cheapest solution using ALL tiers in the subset.
+    Attention: the function assumes the existence of a solution!
+    :param load: total load to be distributed 
+    :param subset: subset of tiers to be considered 
+    :param plants_byCostTier: list of plants by cost tier
+    :param power_ranges_byCostTier: list of power ranges by cost tier
+    :return: cheapest solution using all tiers in the subset
+    """
     nTiers = len(power_ranges_byCostTier)
 
     number_of_combinations = 1
@@ -181,6 +239,17 @@ def bruteForceSolution(load, subset, plants_byCostTier, power_ranges_byCostTier)
 
 
 def distributeLoadInEquivalentPlants(tier_load, plants, wind_pc):
+    """
+    Function that distributes a given load to a list of equivalent power plants (belonging to the same tier).
+    It considers the power set of plants and tries to find a solution for each subset.
+    When there is a solution, the search terminates and the function returns the subset for which a solution exists.
+    The correct power is assigned to the PowerPlant objects in the solution subset.
+    Attention: the function assumes the existence of a solution!
+    :param tier_load: load to be distributed 
+    :param plants: list of PowerPlant objects
+    :param wind_pc: wind percentage
+    :return: subset of power plants for which there is a solution
+    """
     powerset_plants = intervalops.getPowerSet(plants)
     output_plants = []
     for subset in powerset_plants:
@@ -219,6 +288,15 @@ def distributeLoadInEquivalentPlants(tier_load, plants, wind_pc):
 
 
 def optimiseCheckForErrors(data):
+    """
+    Function that takes the raw JSON data and makes sure
+    (1) It's in the proper format (variable types, dictionary keys)
+    (2) Variables are in the allowed ranges
+    If everything is fine, it returns the input data with no modification.
+    Otherwise it returns an error message.
+    :param data: input data
+    :return: data or error
+    """
     #check input format
     load = 0
     gas_price = 0
@@ -308,6 +386,25 @@ def optimiseCheckForErrors(data):
 
 
 def optimise(data_raw):
+    """
+    Function that takes the raw JSON data.
+    If there is a formatting error, this information is passed through to the API interface.
+    If not, the optimisation attempt starts.
+    The PowerPlant objects are initialised, put on a list and ordered by cost.
+    Then a list of cost tiers is established, with each tier containing a list of PowerPlant objects with the same cost per MWh.
+    The global power range available is calculate and the function checks if the load is one of the allowed intervals.
+    If not, an error is returned.
+    If there is a solution, the function tries to find an obvious solution (see tryGoldenPath).
+    If that's not possible, a search for all possible solutions starts.
+    The power set of the cost tiers is obtained, and for each subset an allowed power range is calculated.
+    For power ranges which contain the load as a solution, a brute force search for solutions is performed (see bruteForceSolution).
+    The cheapest solution of each subset is appended to a list of possible solutions.
+    Then the list of possible solutions is ordered by cost, and the cheapest is retained.
+    The correct power is distributed to the PowerPlant objects in each tier of the solution.
+    The JSON output is constructed and returned.
+    :param data: input data
+    :return: JSON solution or error
+    """
     #check input format and value ranges
     data = optimiseCheckForErrors(data_raw)
     if "msg:" in data.keys():
@@ -337,7 +434,7 @@ def optimise(data_raw):
         
 
     #list of plants by cost
-    ordered_plants = sorted(powerplants, key=lambda p: sortByCost(p))
+    ordered_plants = sorted(powerplants, key=lambda plant: plant.cost)
 
     #organisation by cost tiers (plants with same cost), range of power available for each tier
     plants_byCostTier = makeListOfCostTiers(ordered_plants)

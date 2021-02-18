@@ -9,6 +9,8 @@ from functions.optimisation import optimise
 
 #external packages
 import logging
+#set up logging file
+#file gets overwritten each time the server is rehosted
 logging.basicConfig(filename='error_and_info.log', filemode='w', format='%(levelname)s: %(message)s', level=logging.INFO)
 
 
@@ -80,6 +82,7 @@ class ProductionPlanApi(Resource):
     def post(self) -> Response:
         """
         POST response method for optimising load.
+        Returns either the solution to the problem or an error message.
         :return: JSON object
         """
         logging.info("New POST request.")

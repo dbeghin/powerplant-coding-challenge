@@ -1,23 +1,2 @@
 WARNING:  * Debugger is active!
 INFO:  * Debugger PIN: 319-236-878
-INFO: New POST request.
-ERROR: Unable to parse JSON. Check content of JSON file and/or the CURL command used.
-INFO: 127.0.0.1 - - [18/Feb/2021 14:53:10] "[37mPOST /productionplan HTTP/1.1[0m" 200 -
-INFO: New POST request.
-ERROR: Unable to parse JSON. Check content of JSON file and/or the CURL command used.
-INFO: 127.0.0.1 - - [18/Feb/2021 14:53:39] "[37mPOST /productionplan HTTP/1.1[0m" 200 -
-INFO: New POST request.
-INFO: Load is '1501.0'. Available power range is '[[21.6, 21.6], [25.0, 30.0], [46.6, 60.0], [71.6, 81.6], [90.0, 90.0], [111.6, 111.6], [115.0, 120.0], [136.6, 150.0], [161.6, 171.6], [180.0, 2901.6]]'
-INFO: Found no straightforward solution, brute forcing.
-INFO: Solution total cost: 171266.58
-INFO: Solution details by cost tier: [{'load': 111.6, 'cost': 0.0}, {'load': 909.4, 'cost': 31246.98}, {'load': 180.0, 'cost': 6519.6}, {'load': 0, 'cost': 0}, {'load': 300.0, 'cost': 133500.0}]
-INFO: 127.0.0.1 - - [18/Feb/2021 14:53:57] "[37mPOST /productionplan HTTP/1.1[0m" 200 -
-INFO: New POST request.
-ERROR: Unable to parse JSON. Check content of JSON file and/or the CURL command used.
-INFO: 127.0.0.1 - - [18/Feb/2021 14:54:43] "[37mPOST /productionplan HTTP/1.1[0m" 200 -
-INFO: New POST request.
-INFO: Load is '1501.0'. Available power range is '[[21.6, 21.6], [25.0, 30.0], [46.6, 60.0], [71.6, 81.6], [90.0, 90.0], [111.6, 111.6], [115.0, 120.0], [136.6, 150.0], [161.6, 171.6], [180.0, 2901.6]]'
-INFO: Found no straightforward solution, brute forcing.
-INFO: Solution total cost: 171266.58
-INFO: Solution details by cost tier: [{'load': 111.6, 'cost': 0.0}, {'load': 909.4, 'cost': 31246.98}, {'load': 180.0, 'cost': 6519.6}, {'load': 0, 'cost': 0}, {'load': 300.0, 'cost': 133500.0}]
-INFO: 127.0.0.1 - - [18/Feb/2021 14:54:54] "[37mPOST /productionplan HTTP/1.1[0m" 200 -

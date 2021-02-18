@@ -1,4 +1,14 @@
+"""
+Custom library with functions useful for operations on intervals and sets.
+"""
+
+
 def getPowerSet(llist):
+    """
+    Get the power set (set of all subsets) of a given set.
+    :param llist: input list (set)
+    :return: power set
+    """
     power_set_size = pow(2, len(llist))
     
     power_set=[]
@@ -13,6 +23,14 @@ def getPowerSet(llist):
 
 
 def mergeIntervals(interval1, interval2):
+    """
+    Function that checks if two intervals overlap and if they do, merges them.
+    Two intervals [a, b] and [c, d] overlap if e.g. a <= c <= b <= d.
+    In that case, the function will return [ True, [a, d] ]
+    :param interval1: first interval
+    :param interval2: second interval
+    :return: [ merge_successful, new_interval ]
+    """
     interval_out = []
     merge_successful = False
     lmin = 0
@@ -44,6 +62,11 @@ def mergeIntervals(interval1, interval2):
 
 
 def mergeIntervalsInList(list_of_intervals):
+    """
+    Merges all intervals that can be merged in a list of intervals, and returns a cleaned up list of intervals.
+    :param list_of_intervals: original list of intervals
+    :return: new list of intervals
+    """
     list_cleaned = []
     list_copy=list_of_intervals.copy()
     iInd1 = 0
@@ -72,6 +95,12 @@ def mergeIntervalsInList(list_of_intervals):
 
 
 def belongsToInterval(number, list_of_intervals):
+    """
+    Checks if a given number belongs to one of the intervals in a list of intervals.
+    :param number: number to be checked
+    :param list_of_intervals: list of intervals
+    :return: (boolean) whether the condition is True
+    """
     belongs = False
     for interval in list_of_intervals:
         if interval[0] <= number <= interval[1]:
@@ -82,6 +111,18 @@ def belongsToInterval(number, list_of_intervals):
 
 
 def addToPowerRange(old_power_range, new_element):
+    """
+    Useful for when a new power plant or a new set of power plants is taken into consideration.
+    Will return a new global power range, with which e.g. we can check the compatibility of a given load.
+    In more technical detail:
+    Updates an old power range (list of intervals) when a new power range (list of intervals) is taken into consideration.
+    The function first copies the old power range, then appends the new power range.
+    Then it also appends all possible interval sums between one interval in the old range and one in the new range.
+    Finally, it merges all intervals that can be merged.
+    :param old_power_range: old power range
+    :param new_element: new element to be added to the power range
+    :return: increased power range
+    """
     new_power_range = old_power_range.copy()
     for new_sub_range in new_element:
         new_power_range.append(new_sub_range)
@@ -95,6 +136,12 @@ def addToPowerRange(old_power_range, new_element):
 
 
 def getMaxPower(power_range):
+    """
+    Gets maximum number belonging to an ordered list of intervals.
+    (Gets maximum power in a power range.)
+    :param power_range: ordered list of intervals
+    :return: maximum number
+    """
     max_power = 0
     if len(power_range) > 0:
         last_element = power_range[-1]
@@ -103,6 +150,12 @@ def getMaxPower(power_range):
 
 
 def getMinPower(power_range):
+    """
+    Gets minimum number belonging to an ordered list of intervals.
+    (Gets minimum power in a power range.)
+    :param power_range: ordered list of intervals
+    :return: minimum number
+    """
     min_power = 0
     if len(power_range) > 0:
         first_element = power_range[0]
@@ -111,6 +164,13 @@ def getMinPower(power_range):
 
 
 def reduceRangeBy(power_range, number):
+    """
+    Reduces by a given number the minimum and maximum boundaries of all intervals in a list of intervals.
+    If the minimum and maximum would be set below zero, set them to zero instead.
+    :param power_range: list of intervals
+    :param number: number used to reduce the intervals
+    :return: new list of intervals
+    """
     subtracted_range = []
     for tmp_ran in power_range:
         sub_min = tmp_ran[0] - number
