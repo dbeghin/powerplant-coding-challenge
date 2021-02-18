@@ -14,6 +14,9 @@ class PowerPlant:
         self.efficiency = efficiency
         self.pmin = pmin
         self.pmax = pmax
+        if (efficiency <= 0):
+            self.pmin = 0
+            self.pmax = 0
         self.p = 0
 
     def checkPower(self, power, wind_pc):
@@ -57,6 +60,8 @@ class PowerPlant:
         cost = 0
         if self.efficiency > 0:
             cost = fuel_price/self.efficiency
+        else:
+            pass 
         return round(cost, 2)
 
 

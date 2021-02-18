@@ -1,0 +1,12 @@
+{
+  "load": 1,
+  "fuels":
+  {
+    "gas(euro/MWh)": "boo",
+    "kerosine(euro/MWh)": 133.5,
+    "co2(euro/ton)": 20,
+    "wind(%)": 60
+  },
+  "powerplants": [
+  ]
+}

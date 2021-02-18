@@ -7,6 +7,10 @@ from models.powerplant import PowerPlant
 from api.errors import forbidden
 from functions.optimisation import optimise
 
+#external packages
+import logging
+logging.basicConfig(filename='error_and_info.log', filemode='w', format='%(levelname)s: %(message)s', level=logging.INFO)
+
 
 default_solution = [
     {
@@ -78,9 +82,14 @@ class ProductionPlanApi(Resource):
         POST response method for optimising load.
         :return: JSON object
         """
-        data = request.get_json()
+        logging.info("New POST request.")
+        data = request.get_json(silent=True)
+        if data == None:
+            error_message = "Unable to parse JSON. Check content of JSON file and/or the CURL command used."
+            logging.error(error_message)
+            return jsonify({'error': error_message})
+
         output = optimise(data)
-        print(output)
         return jsonify({'result': output})
 
     
