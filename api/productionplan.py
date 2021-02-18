@@ -90,7 +90,7 @@ class ProductionPlanApi(Resource):
             return jsonify({'error': error_message})
 
         output = optimise(data)
-        return jsonify({'result': output})
+        return jsonify(output)
 
     
     #def delete(self, user_id: str) -> Response:
